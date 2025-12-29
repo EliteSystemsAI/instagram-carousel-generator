@@ -32,36 +32,191 @@ if st.query_params.get("healthz"):
     st.write("OK")
     st.stop()
 
-# Custom CSS for better styling
+# Elite Systems AI Custom Styling
 st.markdown("""
 <style>
+    /* Elite Systems AI Theme */
     .stApp {
-        background: linear-gradient(135deg, #000000 0%, #2563EB 100%);
+        background: black !important;
+        color: white !important;
     }
+    
     .main-header {
-        font-size: 3rem;
-        font-weight: bold;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        font-size: 3.5rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #ff3b3b 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-align: center;
         padding: 2rem 0;
+        margin-bottom: 2rem;
+        text-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
     }
+    
+    .subtitle {
+        color: #9ca3af;
+        text-align: center;
+        font-size: 1.2rem;
+        margin-bottom: 3rem;
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg, .css-1cypcdb, .css-fg4pbf {
+        background: rgba(0, 0, 0, 0.9) !important;
+        color: white !important;
+    }
+    
+    .css-1v3fvcr {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+    }
+    
+    /* Button styling */
+    .stButton > button {
+        background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3) !important;
+    }
+    
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #1d4ed8, #2563eb) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 30px rgba(37, 99, 235, 0.4) !important;
+    }
+    
+    /* Input styling */
+    .stTextInput > div > div > input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important;
+        color: white !important;
+    }
+    
+    .stTextArea > div > div > textarea {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important;
+        color: white !important;
+    }
+    
+    .stSelectbox > div > div > div {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important;
+        color: white !important;
+    }
+    
+    .stSelectbox label {
+        color: white !important;
+    }
+    
+    /* Tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-radius: 12px !important;
+        padding: 0.5rem !important;
+        gap: 8px !important;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: transparent !important;
+        border-radius: 8px !important;
+        color: #9ca3af !important;
+        font-weight: 600 !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+        color: white !important;
+        border: 1px solid rgba(37, 99, 235, 0.5) !important;
+    }
+    
+    /* Labels */
+    .css-1cpxqw2, .css-16huue1, label {
+        color: white !important;
+    }
+    
+    /* Headers */
+    h1, h2, h3, h4, h5, h6 {
+        color: white !important;
+    }
+    
+    /* Success/Error messages */
+    .stSuccess {
+        background: rgba(16, 185, 129, 0.2) !important;
+        border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        border-radius: 12px !important;
+        color: #10b981 !important;
+    }
+    
+    .stError {
+        background: rgba(239, 68, 68, 0.2) !important;
+        border: 1px solid rgba(239, 68, 68, 0.3) !important;
+        border-radius: 12px !important;
+        color: #ef4444 !important;
+    }
+    
+    .stInfo {
+        background: rgba(59, 130, 246, 0.2) !important;
+        border: 1px solid rgba(59, 130, 246, 0.3) !important;
+        border-radius: 12px !important;
+        color: #3b82f6 !important;
+    }
+    
+    /* Preview styling */
     .preview-container {
-        background: white;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 16px !important;
+        padding: 2rem !important;
+        margin: 1rem 0 !important;
     }
-    .slide-preview {
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        margin: 10px;
-        transition: transform 0.3s;
+    
+    /* Color picker */
+    .stColorPicker > div > div > div {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important;
     }
-    .slide-preview:hover {
-        transform: scale(1.02);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    
+    /* Progress bar */
+    .stProgress > div > div > div > div {
+        background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+    }
+    
+    /* Slider styling */
+    .stSlider > div > div > div {
+        background: rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    .stSlider > div > div > div > div {
+        background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+    }
+    
+    /* Hide Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    .stDeployButton {display:none;}
+    footer {visibility: hidden;}
+    .stApp > header {visibility: hidden;}
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        border-radius: 4px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -612,12 +767,25 @@ def generate_fallback_content(content_idea: str, num_slides: int) -> Dict:
 if 'slides' not in st.session_state:
     st.session_state.slides = []
 if 'theme' not in st.session_state:
-    st.session_state.theme = BrandTheme(name="YourBrand")
+    st.session_state.theme = BrandTheme(
+        name="Elite Systems AI",
+        primary_color="#2563eb",
+        secondary_color="#3b82f6", 
+        accent_color="#ff3b3b",
+        background_color="#000000",
+        text_color="#ffffff",
+        font_family="Arial"
+    )
 if 'generated_images' not in st.session_state:
     st.session_state.generated_images = []
 
-# Main UI
-st.markdown('<h1 class="main-header">🎨 Instagram Carousel Generator</h1>', unsafe_allow_html=True)
+# Main UI with Elite Systems AI branding
+st.markdown('''
+<div style="text-align: center; margin-bottom: 3rem;">
+    <h1 class="main-header">🎨 Instagram Carousel Generator</h1>
+    <p class="subtitle">Powered by <strong>Elite Systems AI</strong> | Professional carousel creation with AI intelligence</p>
+</div>
+''', unsafe_allow_html=True)
 
 # Sidebar for configuration
 with st.sidebar:
@@ -948,6 +1116,12 @@ with tab3:
     else:
         st.warning("No slides to preview. Create content first!")
 
-# Footer
+# Elite Systems AI Footer
 st.divider()
-st.markdown("Made with ❤️ for Instagram content creators")
+st.markdown('''
+<div class="footer">
+    <p>Made with ❤️ by <strong>Elite Systems AI</strong></p>
+    <p>Professional AI-powered content creation tools for modern businesses</p>
+    <p><a href="https://elitesystemsai.com" target="_blank">Visit Elite Systems AI</a></p>
+</div>
+''', unsafe_allow_html=True)
