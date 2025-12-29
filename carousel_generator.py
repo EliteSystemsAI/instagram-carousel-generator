@@ -194,68 +194,105 @@ st.markdown("""
         background: transparent !important;
     }
 
-    /* Sidebar headers */
-    [data-testid="stSidebar"] h1,
-    [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] h3 {
+    /* Sidebar headers - LARGER TEXT */
+    [data-testid="stSidebar"] h1 {
         color: #ffffff !important;
+        font-size: 1.5rem !important;
+        border-bottom: 1px solid rgba(37, 99, 235, 0.3);
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+
+    [data-testid="stSidebar"] h2 {
+        color: #ffffff !important;
+        font-size: 1.25rem !important;
         border-bottom: 1px solid rgba(37, 99, 235, 0.3);
         padding-bottom: 0.5rem;
         margin-bottom: 1rem;
     }
 
-    /* Sidebar labels and text */
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] p,
-    [data-testid="stSidebar"] span {
-        color: #e0e0e0 !important;
+    [data-testid="stSidebar"] h3 {
+        color: #ffffff !important;
+        font-size: 1.1rem !important;
+        border-bottom: 1px solid rgba(37, 99, 235, 0.3);
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
     }
 
-    /* Sidebar inputs */
+    /* Sidebar labels and text - LARGER & MORE READABLE */
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] p {
+        color: #e0e0e0 !important;
+        font-size: 0.95rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    [data-testid="stSidebar"] span {
+        color: #e0e0e0 !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Sidebar inputs - LARGER & DARKER */
     [data-testid="stSidebar"] input,
     [data-testid="stSidebar"] textarea {
-        background: rgba(37, 99, 235, 0.1) !important;
-        border: 1px solid rgba(37, 99, 235, 0.3) !important;
+        background: rgba(20, 20, 30, 0.8) !important;
+        border: 1px solid rgba(37, 99, 235, 0.4) !important;
         color: #ffffff !important;
         border-radius: 8px !important;
+        font-size: 0.95rem !important;
+        padding: 0.5rem !important;
     }
 
     [data-testid="stSidebar"] input:focus,
     [data-testid="stSidebar"] textarea:focus {
         border-color: #3b82f6 !important;
         box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important;
+        background: rgba(20, 20, 40, 0.9) !important;
     }
 
-    /* Sidebar selectbox */
+    /* Sidebar selectbox - LARGER */
     [data-testid="stSidebar"] [data-baseweb="select"] {
-        background: rgba(37, 99, 235, 0.1) !important;
+        background: rgba(20, 20, 30, 0.8) !important;
     }
 
     [data-testid="stSidebar"] [data-baseweb="select"] > div {
-        background: rgba(37, 99, 235, 0.1) !important;
-        border: 1px solid rgba(37, 99, 235, 0.3) !important;
+        background: rgba(20, 20, 30, 0.8) !important;
+        border: 1px solid rgba(37, 99, 235, 0.4) !important;
         border-radius: 8px !important;
+        min-height: 40px !important;
     }
 
-    /* Sidebar color pickers */
+    [data-testid="stSidebar"] [data-baseweb="select"] span {
+        font-size: 0.95rem !important;
+    }
+
+    /* Sidebar color pickers - LARGER */
     [data-testid="stSidebar"] [data-testid="stColorPicker"] {
-        background: rgba(37, 99, 235, 0.05) !important;
-        padding: 8px !important;
+        background: rgba(20, 20, 30, 0.6) !important;
+        padding: 10px !important;
         border-radius: 8px !important;
+        border: 1px solid rgba(37, 99, 235, 0.2) !important;
     }
 
-    /* Sidebar sliders */
+    [data-testid="stSidebar"] [data-testid="stColorPicker"] > div > div {
+        width: 50px !important;
+        height: 35px !important;
+    }
+
+    /* Sidebar sliders - BETTER VISIBILITY */
     [data-testid="stSidebar"] [data-testid="stSlider"] {
-        padding: 0.5rem 0 !important;
+        padding: 0.75rem 0 !important;
     }
 
     [data-testid="stSidebar"] [data-testid="stSlider"] > div > div > div {
-        background: rgba(37, 99, 235, 0.2) !important;
+        background: rgba(37, 99, 235, 0.3) !important;
+        height: 6px !important;
     }
 
     [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stThumbValue"] {
-        color: #3b82f6 !important;
+        color: #60a5fa !important;
         font-weight: 600 !important;
+        font-size: 0.9rem !important;
     }
 
     /* Sidebar buttons */
@@ -342,28 +379,46 @@ st.markdown("""
     }
 
     /* ==========================================
-       INPUTS - MAIN AREA
+       INPUTS - MAIN AREA (DARK BACKGROUNDS)
        ========================================== */
 
     .stTextInput > div > div > input,
     .stTextArea > div > div > textarea {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 8px !important;
-        color: white !important;
+        background: rgba(15, 15, 25, 0.9) !important;
+        border: 1px solid rgba(37, 99, 235, 0.4) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        font-size: 1rem !important;
+        padding: 0.75rem 1rem !important;
+    }
+
+    .stTextInput > div > div > input::placeholder,
+    .stTextArea > div > div > textarea::placeholder {
+        color: rgba(255, 255, 255, 0.4) !important;
     }
 
     .stTextInput > div > div > input:focus,
     .stTextArea > div > div > textarea:focus {
         border-color: #3b82f6 !important;
-        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.4) !important;
+        background: rgba(20, 20, 35, 0.95) !important;
+    }
+
+    /* Text area specific styling */
+    .stTextArea > div > div > textarea {
+        min-height: 120px !important;
     }
 
     .stSelectbox > div > div > div {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        background: rgba(15, 15, 25, 0.9) !important;
+        border: 1px solid rgba(37, 99, 235, 0.4) !important;
         border-radius: 8px !important;
         color: white !important;
+        min-height: 42px !important;
+    }
+
+    .stSelectbox > div > div > div:hover {
+        border-color: #3b82f6 !important;
     }
 
     /* ==========================================
@@ -398,35 +453,61 @@ st.markdown("""
     }
 
     /* ==========================================
-       ALERTS & MESSAGES
+       ALERTS & MESSAGES - HIGH CONTRAST
        ========================================== */
 
     .stSuccess, [data-testid="stAlert"][data-baseweb*="positive"] {
-        background: rgba(16, 185, 129, 0.15) !important;
-        border: 1px solid rgba(16, 185, 129, 0.4) !important;
+        background: rgba(16, 185, 129, 0.2) !important;
+        border: 2px solid rgba(16, 185, 129, 0.6) !important;
         border-radius: 12px !important;
-        color: #10b981 !important;
+        padding: 1rem !important;
+    }
+
+    .stSuccess p, [data-testid="stAlert"][data-baseweb*="positive"] p {
+        color: #34d399 !important;
+        font-size: 0.95rem !important;
     }
 
     .stError, [data-testid="stAlert"][data-baseweb*="negative"] {
-        background: rgba(239, 68, 68, 0.15) !important;
-        border: 1px solid rgba(239, 68, 68, 0.4) !important;
+        background: rgba(239, 68, 68, 0.2) !important;
+        border: 2px solid rgba(239, 68, 68, 0.6) !important;
         border-radius: 12px !important;
-        color: #ef4444 !important;
+        padding: 1rem !important;
+    }
+
+    .stError p, [data-testid="stAlert"][data-baseweb*="negative"] p {
+        color: #f87171 !important;
+        font-size: 0.95rem !important;
     }
 
     .stInfo, [data-testid="stAlert"] {
-        background: rgba(59, 130, 246, 0.15) !important;
-        border: 1px solid rgba(59, 130, 246, 0.4) !important;
+        background: rgba(59, 130, 246, 0.2) !important;
+        border: 2px solid rgba(59, 130, 246, 0.5) !important;
         border-radius: 12px !important;
-        color: #60a5fa !important;
+        padding: 1rem !important;
+    }
+
+    .stInfo p, [data-testid="stAlert"] p {
+        color: #93c5fd !important;
+        font-size: 0.95rem !important;
+    }
+
+    [data-testid="stAlert"] li {
+        color: #93c5fd !important;
+        font-size: 0.9rem !important;
+        margin: 0.25rem 0 !important;
     }
 
     .stWarning {
-        background: rgba(245, 158, 11, 0.15) !important;
-        border: 1px solid rgba(245, 158, 11, 0.4) !important;
+        background: rgba(245, 158, 11, 0.2) !important;
+        border: 2px solid rgba(245, 158, 11, 0.6) !important;
         border-radius: 12px !important;
-        color: #f59e0b !important;
+        padding: 1rem !important;
+    }
+
+    .stWarning p {
+        color: #fbbf24 !important;
+        font-size: 0.95rem !important;
     }
 
     /* ==========================================
@@ -1719,7 +1800,12 @@ with tab1:
                         st.text_area("Caption", value=suggestions.get('caption', ''), height=150)
                         
                         st.subheader("#️⃣ Suggested Hashtags")
-                        st.code(' '.join(suggestions.get('hashtags', [])))
+                        hashtags = suggestions.get('hashtags', [])
+                        # Handle both string and list formats
+                        if isinstance(hashtags, str):
+                            st.code(hashtags)
+                        else:
+                            st.code(' '.join(hashtags))
                     else:
                         status_container.error("❌ Failed to generate content. Please try again.")
                         
