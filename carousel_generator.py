@@ -260,7 +260,7 @@ class CarouselGenerator:
         self.theme = theme
         self.slides = []
         
-    def create_slide(self, slide: CarouselSlide) -> Image.Image:
+    def create_slide(self, slide: CarouselSlide, custom_sizes: Dict = None) -> Image.Image:
         """Create a single carousel slide with intelligent text positioning"""
         # Create base image
         img = Image.new('RGB', self.INSTAGRAM_SIZE, color='white')
@@ -300,9 +300,19 @@ class CarouselGenerator:
         # Draw slide number indicator
         self._draw_slide_indicator(draw, slide.slide_number)
         
+        # Get fonts with custom sizes if provided
+        if custom_sizes:
+            fonts = self._load_fonts_with_emoji_support(custom_sizes)
+        else:
+            fonts = {
+                'title': self._get_adaptive_font(optimized_slide.title or "", layout_info['title_font_size']),
+                'subtitle': self._get_adaptive_font(optimized_slide.subtitle or "", layout_info['subtitle_font_size']),
+                'body': self._get_adaptive_font(optimized_slide.body_text or "", layout_info['body_font_size']),
+                'bullet': self._get_adaptive_font("", layout_info['bullet_font_size'])
+            }
+        
         # Draw title with dynamic font sizing and effects
         if optimized_slide.title:
-            title_font = self._get_adaptive_font(optimized_slide.title, layout_info['title_font_size'])
             title_height = self._draw_text_with_effects(
                 draw, optimized_slide.title, (x_offset, current_y),
                 title_font, self.theme.text_color, align, 
@@ -355,21 +365,59 @@ class CarouselGenerator:
         
         return img
     
+    def _load_fonts_with_emoji_support(self, custom_sizes: Dict):
+        """Load fonts with better emoji support"""
+        # Try emoji-compatible fonts first
+        font_options = [
+            "Arial Unicode MS",   # Good emoji support
+            "Segoe UI Emoji",     # Windows emoji font  
+            "Apple Color Emoji",  # macOS emoji font
+            "Noto Color Emoji",   # Google emoji font
+            self.theme.font_family,  # User's chosen font
+            "Arial",              # Standard fallback
+            "DejaVu Sans"         # Final fallback
+        ]
+        
+        fonts = {}
+        for font_type in ['title', 'subtitle', 'body', 'bullet']:
+            size = custom_sizes[font_type]
+            font_loaded = False
+            
+            for font_name in font_options:
+                try:
+                    fonts[font_type] = ImageFont.truetype(font_name, size)
+                    font_loaded = True
+                    break
+                except (OSError, IOError):
+                    continue
+            
+            if not font_loaded:
+                try:
+                    # Try default with size
+                    fonts[font_type] = ImageFont.load_default(size)
+                except:
+                    # Ultimate fallback
+                    fonts[font_type] = ImageFont.load_default()
+        
+        return fonts
+    
     def _get_contrast_color(self, background_style: str, is_subtitle: bool = False) -> str:
         """Get appropriate text color based on background for better contrast"""
         if background_style == "gradient":
-            # For gradients, use white with stronger effects
+            # For gradients, use high contrast colors with thick outlines
             if is_subtitle:
-                # Make subtitle more distinct with a light blue/cyan color
-                return "#E0F2FE"  # Light cyan that works well on dark backgrounds
+                return "#ffffff"  # Pure white for maximum contrast
             else:
                 return "#ffffff"  # Pure white for main text
         elif background_style == "solid":
-            # For solid backgrounds, use theme colors
-            return self.theme.accent_color if is_subtitle else self.theme.text_color
+            # For solid backgrounds, ensure high contrast
+            if self.theme.background_color == "#000000":
+                return "#ffffff"  # White on black
+            else:
+                return "#000000"  # Black on light backgrounds
         else:
-            # Default
-            return self.theme.accent_color if is_subtitle else self.theme.text_color
+            # Default to high contrast
+            return "#ffffff"
         
     def _apply_gradient(self, img: Image.Image, color1: str, color2: str):
         """Apply gradient background"""
@@ -518,24 +566,23 @@ class CarouselGenerator:
             else:
                 x = position[0]
             
-            # Add shadow effect for better readability (especially for titles)
-            if add_shadow:
-                shadow_color = "#000000" if color != "#000000" else "#ffffff"
-                # Create more pronounced shadow for better visibility
-                shadow_positions = [(2, 2), (3, 3)] if font.size > 50 else [(1, 1), (2, 2)]
-                for dx, dy in shadow_positions:
-                    draw.text((x + dx, y + dy), line, fill=shadow_color, font=font)
-                    
-            # Add outline for high contrast (optional enhancement)
-            elif color in ["#ffffff", "#000000"] or font.size > 60:
-                outline_color = "#000000" if color == "#ffffff" else "#ffffff"
-                for dx in [-1, 0, 1]:
-                    for dy in [-1, 0, 1]:
-                        if dx != 0 or dy != 0:
-                            draw.text((x + dx, y + dy), line, fill=outline_color, font=font)
+            # Always add strong outline for maximum readability on gradients
+            outline_color = "#000000"
+            outline_thickness = 4 if font.size > 50 else 3
             
-            # Draw main text
-            draw.text((x, y), line, fill=color, font=font)
+            # Draw thick black outline for maximum contrast
+            for dx in range(-outline_thickness, outline_thickness + 1):
+                for dy in range(-outline_thickness, outline_thickness + 1):
+                    if dx != 0 or dy != 0:
+                        draw.text((x + dx, y + dy), line, fill=outline_color, font=font)
+            
+            # Add additional shadow for extra depth if requested
+            if add_shadow:
+                shadow_offset = 6
+                draw.text((x + shadow_offset, y + shadow_offset), line, fill="#000000", font=font)
+            
+            # Draw main white text on top for maximum contrast
+            draw.text((x, y), line, fill="#ffffff", font=font)
             y += line_height + line_spacing
             
         return len(lines) * line_height + (len(lines) - 1) * line_spacing
@@ -811,6 +858,13 @@ with st.sidebar:
         index=0
     )
     
+    # Font Size Controls
+    st.subheader("📝 Typography")
+    title_size = st.slider("Title Font Size", min_value=40, max_value=100, value=68, step=4)
+    subtitle_size = st.slider("Subtitle Font Size", min_value=30, max_value=80, value=48, step=4)
+    body_size = st.slider("Body Font Size", min_value=24, max_value=60, value=36, step=2)
+    bullet_size = st.slider("Bullet Font Size", min_value=20, max_value=50, value=32, step=2)
+    
     # Update theme
     st.session_state.theme = BrandTheme(
         name=brand_name,
@@ -1021,9 +1075,17 @@ with tab3:
             generator = CarouselGenerator(st.session_state.theme)
             st.session_state.generated_images = []
             
+            # Get custom font sizes from sidebar
+            custom_sizes = {
+                'title': title_size,
+                'subtitle': subtitle_size, 
+                'body': body_size,
+                'bullet': bullet_size
+            }
+            
             progress_bar = st.progress(0)
             for i, slide in enumerate(st.session_state.slides):
-                img = generator.create_slide(slide)
+                img = generator.create_slide(slide, custom_sizes)
                 st.session_state.generated_images.append(img)
                 progress_bar.progress((i + 1) / len(st.session_state.slides))
             
