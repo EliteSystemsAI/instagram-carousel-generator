@@ -130,47 +130,201 @@ if st.query_params.get("healthz"):
     st.write("OK")
     st.stop()
 
-# Elite Systems AI Custom Styling
+# Elite Systems AI Custom Styling - Cohesive Dark Theme
 st.markdown("""
 <style>
-    /* Elite Systems AI Theme */
+    /* ==========================================
+       ELITE SYSTEMS AI - COHESIVE DARK THEME
+       ========================================== */
+
+    /* Base App Styling */
     .stApp {
-        background: black !important;
-        color: white !important;
+        background: linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%) !important;
+        color: #ffffff !important;
     }
-    
+
+    /* Main content area */
+    .main .block-container {
+        background: transparent !important;
+        padding: 2rem 3rem 3rem 3rem !important;
+        max-width: 1200px !important;
+    }
+
+    /* Improved padding for all containers */
+    [data-testid="stVerticalBlock"] > div {
+        padding: 0.25rem 0 !important;
+    }
+
+    /* Form elements spacing */
+    .stTextInput, .stTextArea, .stSelectbox, .stSlider {
+        margin-bottom: 0.75rem !important;
+    }
+
+    /* Better spacing for columns */
+    [data-testid="column"] {
+        padding: 0 0.5rem !important;
+    }
+
+    /* Card-like containers */
+    .element-container {
+        margin-bottom: 0.5rem !important;
+    }
+
+    /* ==========================================
+       SIDEBAR - COHESIVE STYLING
+       ========================================== */
+
+    /* Sidebar container - using data-testid for stability */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0f0f0f 0%, #1a1a1a 100%) !important;
+        border-right: 1px solid rgba(37, 99, 235, 0.3) !important;
+    }
+
+    [data-testid="stSidebar"] > div:first-child {
+        background: transparent !important;
+        padding: 1.5rem 1rem !important;
+    }
+
+    [data-testid="stSidebar"] .block-container {
+        padding: 1rem !important;
+    }
+
+    /* Sidebar content */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        background: transparent !important;
+    }
+
+    /* Sidebar headers */
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3 {
+        color: #ffffff !important;
+        border-bottom: 1px solid rgba(37, 99, 235, 0.3);
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Sidebar labels and text */
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] span {
+        color: #e0e0e0 !important;
+    }
+
+    /* Sidebar inputs */
+    [data-testid="stSidebar"] input,
+    [data-testid="stSidebar"] textarea {
+        background: rgba(37, 99, 235, 0.1) !important;
+        border: 1px solid rgba(37, 99, 235, 0.3) !important;
+        color: #ffffff !important;
+        border-radius: 8px !important;
+    }
+
+    [data-testid="stSidebar"] input:focus,
+    [data-testid="stSidebar"] textarea:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    /* Sidebar selectbox */
+    [data-testid="stSidebar"] [data-baseweb="select"] {
+        background: rgba(37, 99, 235, 0.1) !important;
+    }
+
+    [data-testid="stSidebar"] [data-baseweb="select"] > div {
+        background: rgba(37, 99, 235, 0.1) !important;
+        border: 1px solid rgba(37, 99, 235, 0.3) !important;
+        border-radius: 8px !important;
+    }
+
+    /* Sidebar color pickers */
+    [data-testid="stSidebar"] [data-testid="stColorPicker"] {
+        background: rgba(37, 99, 235, 0.05) !important;
+        padding: 8px !important;
+        border-radius: 8px !important;
+    }
+
+    /* Sidebar sliders */
+    [data-testid="stSidebar"] [data-testid="stSlider"] {
+        padding: 0.5rem 0 !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stSlider"] > div > div > div {
+        background: rgba(37, 99, 235, 0.2) !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stThumbValue"] {
+        color: #3b82f6 !important;
+        font-weight: 600 !important;
+    }
+
+    /* Sidebar buttons */
+    [data-testid="stSidebar"] .stButton > button {
+        background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        width: 100% !important;
+        transition: all 0.3s ease !important;
+    }
+
+    [data-testid="stSidebar"] .stButton > button:hover {
+        background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4) !important;
+    }
+
+    /* Sidebar metrics/stats boxes */
+    [data-testid="stSidebar"] [data-testid="stMetric"] {
+        background: rgba(37, 99, 235, 0.1) !important;
+        padding: 1rem !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(37, 99, 235, 0.2) !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stMetricValue"] {
+        color: #3b82f6 !important;
+    }
+
+    /* Sidebar dividers */
+    [data-testid="stSidebar"] hr {
+        border-color: rgba(37, 99, 235, 0.3) !important;
+        margin: 1.5rem 0 !important;
+    }
+
+    /* ==========================================
+       MAIN CONTENT AREA
+       ========================================== */
+
     .main-header {
         font-size: 3.5rem;
         font-weight: 900;
         background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #ff3b3b 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        background-clip: text;
         text-align: center;
         padding: 2rem 0;
-        margin-bottom: 2rem;
-        text-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
+        margin-bottom: 1rem;
     }
-    
+
     .subtitle {
         color: #9ca3af;
         text-align: center;
         font-size: 1.2rem;
-        margin-bottom: 3rem;
+        margin-bottom: 2rem;
     }
-    
-    /* Sidebar styling */
-    .css-1d391kg, .css-1cypcdb, .css-fg4pbf {
-        background: rgba(0, 0, 0, 0.9) !important;
-        color: white !important;
+
+    /* Headers in main area */
+    .main h1, .main h2, .main h3, .main h4, .main h5, .main h6 {
+        color: #ffffff !important;
     }
-    
-    .css-1v3fvcr {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 12px !important;
-    }
-    
-    /* Button styling */
+
+    /* ==========================================
+       BUTTONS - MAIN AREA
+       ========================================== */
+
     .stButton > button {
         background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
         color: white !important;
@@ -180,141 +334,233 @@ st.markdown("""
         transition: all 0.3s ease !important;
         box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3) !important;
     }
-    
+
     .stButton > button:hover {
         background: linear-gradient(135deg, #1d4ed8, #2563eb) !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 8px 30px rgba(37, 99, 235, 0.4) !important;
     }
-    
-    /* Input styling */
-    .stTextInput > div > div > input {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 8px !important;
-        color: white !important;
-    }
-    
+
+    /* ==========================================
+       INPUTS - MAIN AREA
+       ========================================== */
+
+    .stTextInput > div > div > input,
     .stTextArea > div > div > textarea {
         background: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 8px !important;
         color: white !important;
     }
-    
+
+    .stTextInput > div > div > input:focus,
+    .stTextArea > div > div > textarea:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important;
+    }
+
     .stSelectbox > div > div > div {
         background: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 8px !important;
         color: white !important;
     }
-    
-    .stSelectbox label {
-        color: white !important;
-    }
-    
-    /* Tab styling */
+
+    /* ==========================================
+       TABS
+       ========================================== */
+
     .stTabs [data-baseweb="tab-list"] {
-        background: rgba(255, 255, 255, 0.05) !important;
+        background: rgba(37, 99, 235, 0.1) !important;
         border-radius: 12px !important;
         padding: 0.5rem !important;
         gap: 8px !important;
+        border: 1px solid rgba(37, 99, 235, 0.2) !important;
     }
-    
+
     .stTabs [data-baseweb="tab"] {
         background: transparent !important;
         border-radius: 8px !important;
         color: #9ca3af !important;
         font-weight: 600 !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid transparent !important;
     }
-    
+
+    .stTabs [data-baseweb="tab"]:hover {
+        color: #ffffff !important;
+        background: rgba(37, 99, 235, 0.2) !important;
+    }
+
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
         color: white !important;
         border: 1px solid rgba(37, 99, 235, 0.5) !important;
     }
-    
-    /* Labels */
-    .css-1cpxqw2, .css-16huue1, label {
-        color: white !important;
-    }
-    
-    /* Headers */
-    h1, h2, h3, h4, h5, h6 {
-        color: white !important;
-    }
-    
-    /* Success/Error messages */
-    .stSuccess {
-        background: rgba(16, 185, 129, 0.2) !important;
-        border: 1px solid rgba(16, 185, 129, 0.3) !important;
+
+    /* ==========================================
+       ALERTS & MESSAGES
+       ========================================== */
+
+    .stSuccess, [data-testid="stAlert"][data-baseweb*="positive"] {
+        background: rgba(16, 185, 129, 0.15) !important;
+        border: 1px solid rgba(16, 185, 129, 0.4) !important;
         border-radius: 12px !important;
         color: #10b981 !important;
     }
-    
-    .stError {
-        background: rgba(239, 68, 68, 0.2) !important;
-        border: 1px solid rgba(239, 68, 68, 0.3) !important;
+
+    .stError, [data-testid="stAlert"][data-baseweb*="negative"] {
+        background: rgba(239, 68, 68, 0.15) !important;
+        border: 1px solid rgba(239, 68, 68, 0.4) !important;
         border-radius: 12px !important;
         color: #ef4444 !important;
     }
-    
-    .stInfo {
-        background: rgba(59, 130, 246, 0.2) !important;
-        border: 1px solid rgba(59, 130, 246, 0.3) !important;
+
+    .stInfo, [data-testid="stAlert"] {
+        background: rgba(59, 130, 246, 0.15) !important;
+        border: 1px solid rgba(59, 130, 246, 0.4) !important;
         border-radius: 12px !important;
-        color: #3b82f6 !important;
+        color: #60a5fa !important;
     }
-    
-    /* Preview styling */
-    .preview-container {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 16px !important;
-        padding: 2rem !important;
-        margin: 1rem 0 !important;
+
+    .stWarning {
+        background: rgba(245, 158, 11, 0.15) !important;
+        border: 1px solid rgba(245, 158, 11, 0.4) !important;
+        border-radius: 12px !important;
+        color: #f59e0b !important;
     }
-    
-    /* Color picker */
-    .stColorPicker > div > div > div {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 8px !important;
-    }
-    
-    /* Progress bar */
+
+    /* ==========================================
+       PROGRESS BAR
+       ========================================== */
+
     .stProgress > div > div > div > div {
-        background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+        background: linear-gradient(135deg, #2563eb, #3b82f6, #ff3b3b) !important;
     }
-    
-    /* Slider styling */
+
+    /* ==========================================
+       SLIDERS - MAIN AREA
+       ========================================== */
+
     .stSlider > div > div > div {
         background: rgba(255, 255, 255, 0.1) !important;
     }
-    
+
     .stSlider > div > div > div > div {
         background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
     }
-    
-    /* Hide Streamlit branding */
+
+    [data-testid="stThumbValue"] {
+        color: #3b82f6 !important;
+        font-weight: 600 !important;
+    }
+
+    /* ==========================================
+       EXPANDERS
+       ========================================== */
+
+    .streamlit-expanderHeader {
+        background: rgba(37, 99, 235, 0.1) !important;
+        border: 1px solid rgba(37, 99, 235, 0.2) !important;
+        border-radius: 8px !important;
+        color: #ffffff !important;
+    }
+
+    .streamlit-expanderContent {
+        background: rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(37, 99, 235, 0.2) !important;
+        border-top: none !important;
+        border-radius: 0 0 8px 8px !important;
+    }
+
+    /* ==========================================
+       DATAFRAMES & TABLES
+       ========================================== */
+
+    .stDataFrame {
+        background: rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(37, 99, 235, 0.2) !important;
+        border-radius: 8px !important;
+    }
+
+    /* ==========================================
+       CODE BLOCKS
+       ========================================== */
+
+    code {
+        background: rgba(37, 99, 235, 0.2) !important;
+        color: #60a5fa !important;
+        padding: 2px 6px !important;
+        border-radius: 4px !important;
+    }
+
+    /* ==========================================
+       HIDE STREAMLIT BRANDING
+       ========================================== */
+
     #MainMenu {visibility: hidden;}
     .stDeployButton {display:none;}
     footer {visibility: hidden;}
     .stApp > header {visibility: hidden;}
-    
-    /* Custom scrollbar */
+
+    /* ==========================================
+       CUSTOM SCROLLBAR
+       ========================================== */
+
     ::-webkit-scrollbar {
         width: 8px;
+        height: 8px;
     }
-    
+
     ::-webkit-scrollbar-track {
         background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
     }
-    
+
     ::-webkit-scrollbar-thumb {
         background: linear-gradient(135deg, #2563eb, #3b82f6);
         border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    }
+
+    /* ==========================================
+       ELITE BRANDING ELEMENTS
+       ========================================== */
+
+    .elite-badge {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .elite-card {
+        background: rgba(37, 99, 235, 0.1);
+        border: 1px solid rgba(37, 99, 235, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+
+    .elite-stat {
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .elite-stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #3b82f6;
+    }
+
+    .elite-stat-label {
+        font-size: 0.9rem;
+        color: #9ca3af;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -486,39 +732,68 @@ class CarouselGenerator:
             return error_img
     
     def _load_fonts_with_emoji_support(self, custom_sizes: Dict):
-        """Load fonts with better emoji support"""
-        # Try emoji-compatible fonts first
+        """Load fonts with better emoji support for all platforms including Railway/Linux"""
+        # Extended font options with full paths for Linux/Docker environments
         font_options = [
-            "Arial Unicode MS",   # Good emoji support
-            "Segoe UI Emoji",     # Windows emoji font  
-            "Apple Color Emoji",  # macOS emoji font
-            "Noto Color Emoji",   # Google emoji font
-            self.theme.font_family,  # User's chosen font
-            "Arial",              # Standard fallback
-            "DejaVu Sans"         # Final fallback
+            # Linux/Docker paths (Railway uses Nixpacks/Docker)
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+            "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
+            "/usr/share/fonts/TTF/DejaVuSans.ttf",
+            # macOS fonts
+            "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+            "/System/Library/Fonts/Apple Color Emoji.ttc",
+            "/Library/Fonts/Arial Unicode.ttf",
+            # Windows fonts
+            "C:/Windows/Fonts/arialuni.ttf",
+            "C:/Windows/Fonts/seguiemj.ttf",
+            # Generic font names (PIL will search system paths)
+            "Arial Unicode MS",
+            "DejaVu Sans",
+            "Liberation Sans",
+            "FreeSans",
+            "Noto Sans",
+            self.theme.font_family,
+            "Arial",
         ]
-        
+
         fonts = {}
+        successful_font = None
+
         for font_type in ['title', 'subtitle', 'body', 'bullet']:
             size = custom_sizes[font_type]
             font_loaded = False
-            
-            for font_name in font_options:
+
+            # If we already found a working font, try it first
+            if successful_font:
                 try:
-                    fonts[font_type] = ImageFont.truetype(font_name, size)
+                    fonts[font_type] = ImageFont.truetype(successful_font, size)
                     font_loaded = True
-                    break
                 except (OSError, IOError):
-                    continue
-            
+                    pass
+
+            if not font_loaded:
+                for font_path in font_options:
+                    try:
+                        fonts[font_type] = ImageFont.truetype(font_path, size)
+                        font_loaded = True
+                        successful_font = font_path  # Remember this font works
+                        logger.info(f"Loaded font: {font_path} for {font_type}")
+                        break
+                    except (OSError, IOError):
+                        continue
+
             if not font_loaded:
                 try:
-                    # Try default with size
+                    # Try default with size (PIL 10.0+)
                     fonts[font_type] = ImageFont.load_default(size)
-                except:
-                    # Ultimate fallback
+                    logger.warning(f"Using default font for {font_type}")
+                except TypeError:
+                    # Older PIL versions don't support size parameter
                     fonts[font_type] = ImageFont.load_default()
-        
+                    logger.warning(f"Using basic default font for {font_type}")
+
         return fonts
     
     def _get_contrast_color(self, background_style: str, is_subtitle: bool = False) -> str:
@@ -842,45 +1117,78 @@ def sanitize_json_string(text: str) -> str:
     """Sanitize JSON string by removing invalid control characters"""
     if not text:
         return text
-    
+
     # Remove control characters except tab, newline, and carriage return
     sanitized = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]', '', text)
-    
+
     # Replace problematic quotes and ensure proper escaping
     sanitized = sanitized.replace('\u201c', '"').replace('\u201d', '"')
     sanitized = sanitized.replace('\u2018', "'").replace('\u2019', "'")
-    
+
+    # Remove any trailing commas before closing braces/brackets (common JSON error)
+    sanitized = re.sub(r',\s*}', '}', sanitized)
+    sanitized = re.sub(r',\s*]', ']', sanitized)
+
+    # Fix escaped newlines in strings that might cause issues
+    sanitized = sanitized.replace('\\n', ' ')
+
     return sanitized
 
 def extract_json_from_text(text: str) -> Optional[Dict]:
     """Extract and parse JSON from potentially malformed text response"""
+    logger.info(f"Attempting to extract JSON from response (length: {len(text)})")
+
+    # First, try to find JSON block markers
+    json_start_markers = ['```json', '```JSON', '```']
+    json_end_markers = ['```']
+
+    text_to_parse = text
+
+    # Check for markdown code blocks
+    for start_marker in json_start_markers:
+        if start_marker in text:
+            start_idx = text.find(start_marker) + len(start_marker)
+            # Find the closing marker
+            end_idx = text.find('```', start_idx)
+            if end_idx > start_idx:
+                text_to_parse = text[start_idx:end_idx].strip()
+                logger.info(f"Found JSON in code block")
+                break
+
+    # If no code block found, look for raw JSON object
+    if text_to_parse == text:
+        # Find the first { and last } to extract JSON object
+        first_brace = text.find('{')
+        last_brace = text.rfind('}')
+        if first_brace != -1 and last_brace > first_brace:
+            text_to_parse = text[first_brace:last_brace + 1]
+            logger.info(f"Extracted JSON from braces")
+
+    # Sanitize and try parsing
     try:
-        # First try direct parsing
-        sanitized = sanitize_json_string(text)
-        return json.loads(sanitized)
-    except json.JSONDecodeError:
+        sanitized = sanitize_json_string(text_to_parse)
+        result = json.loads(sanitized)
+        logger.info(f"Successfully parsed JSON with keys: {list(result.keys()) if isinstance(result, dict) else 'array'}")
+        return result
+    except json.JSONDecodeError as e:
+        logger.warning(f"JSON decode error: {e}")
+        logger.debug(f"Failed text (first 500 chars): {text_to_parse[:500]}")
+
+        # Try more aggressive cleaning
         try:
-            # Try to find JSON block in the text
-            json_patterns = [
-                r'```json\s*({.*?})\s*```',
-                r'```\s*({.*?})\s*```',
-                r'({.*?})',
-                r'\[{.*?}\]'
-            ]
-            
-            for pattern in json_patterns:
-                matches = re.findall(pattern, text, re.DOTALL | re.IGNORECASE)
-                for match in matches:
-                    try:
-                        sanitized_match = sanitize_json_string(match)
-                        parsed = json.loads(sanitized_match)
-                        if isinstance(parsed, dict) and len(parsed) > 0:
-                            return parsed
-                    except json.JSONDecodeError:
-                        continue
-        except Exception:
+            # Remove any text before first { and after last }
+            cleaned = text_to_parse.strip()
+            if cleaned.startswith('{') and cleaned.endswith('}'):
+                # Try replacing single quotes with double quotes
+                cleaned = re.sub(r"'([^']*)':", r'"\1":', cleaned)
+                sanitized = sanitize_json_string(cleaned)
+                result = json.loads(sanitized)
+                logger.info(f"Successfully parsed JSON after aggressive cleaning")
+                return result
+        except json.JSONDecodeError:
             pass
-    
+
+    logger.error(f"All JSON parsing attempts failed")
     return None
 
 def validate_ai_response(response_data: Dict) -> bool:
@@ -908,29 +1216,64 @@ def validate_ai_response(response_data: Dict) -> bool:
 def get_ai_suggestions(content_idea: str, num_slides: int = 5) -> Dict:
     """Get AI-powered content suggestions for carousel"""
     start_time = time.time()
-    
+    logger.info(f"Getting AI suggestions for: {content_idea} ({num_slides} slides)")
+
     # Try Claude API first
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if api_key and api_key != "YOUR_CLAUDE_API_KEY_HERE":
         try:
             client = anthropic.Anthropic(api_key=api_key)
-            
+
+            # Calculate content slides (total - hook - CTA)
+            content_slide_count = max(1, num_slides - 2)
+
             prompt = f"""Create an Instagram carousel post with {num_slides} slides about: {content_idea}
-            
-            Return a JSON structure with:
-            - hook_slide: Compelling first slide with title and subtitle
-            - content_slides: Array of {num_slides-2} value-providing slides with title, subtitle, and 3-4 bullet points each
-            - cta_slide: Call-to-action final slide with title, subtitle, and action text
-            - hashtags: 10-15 relevant hashtags
-            - caption: Engaging Instagram caption (150-200 words)
-            
-            Make it educational, valuable, and engaging for Instagram audience."""
-            
+
+You MUST respond with ONLY a valid JSON object, no other text before or after. No markdown, no explanation.
+
+The JSON must have this exact structure:
+{{
+    "hook_slide": {{
+        "title": "Attention-grabbing hook title (max 8 words)",
+        "subtitle": "Supporting subtitle that creates curiosity"
+    }},
+    "content_slides": [
+        {{
+            "title": "Slide title",
+            "subtitle": "Brief subtitle",
+            "bullet_points": ["Point 1", "Point 2", "Point 3"]
+        }}
+    ],
+    "cta_slide": {{
+        "title": "Strong call-to-action title",
+        "subtitle": "What they should do next",
+        "action_text": "Follow for more!"
+    }},
+    "hashtags": "#hashtag1 #hashtag2 #hashtag3",
+    "caption": "Engaging Instagram caption with emojis and call to action."
+}}
+
+Requirements:
+- hook_slide: Create a compelling hook that stops scrollers
+- content_slides: Provide exactly {content_slide_count} content slides with valuable tips/insights
+- cta_slide: Strong call-to-action encouraging engagement
+- hashtags: 10-15 relevant hashtags as a single string
+- caption: 150-200 word engaging caption with emojis
+
+Topic: {content_idea}
+
+Respond with ONLY the JSON object, nothing else."""
+
             response = client.messages.create(
                 model="claude-3-haiku-20240307",
-                max_tokens=2000,
+                max_tokens=2500,
                 temperature=0.7,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
             )
             
             # Parse response with enhanced error handling
@@ -1138,9 +1481,130 @@ with st.sidebar:
                 st.error(f"Failed to load theme: {e}")
         else:
             st.error("No saved theme found. Save a theme first!")
-    
+
     st.divider()
-    
+
+    # ==========================================
+    # ELITE BRAND STRATEGIST FEATURES
+    # ==========================================
+    st.subheader("🚀 Elite Brand Templates")
+
+    # Pre-built brand templates
+    template_options = {
+        "Elite Systems AI": {
+            "primary": "#2563eb",
+            "secondary": "#3b82f6",
+            "accent": "#ff3b3b",
+            "bg": "#000000",
+            "text": "#ffffff"
+        },
+        "Luxury Gold": {
+            "primary": "#d4af37",
+            "secondary": "#b8860b",
+            "accent": "#ffd700",
+            "bg": "#1a1a1a",
+            "text": "#ffffff"
+        },
+        "Ocean Vibes": {
+            "primary": "#0077b6",
+            "secondary": "#00b4d8",
+            "accent": "#90e0ef",
+            "bg": "#03045e",
+            "text": "#ffffff"
+        },
+        "Sunset Energy": {
+            "primary": "#ff6b6b",
+            "secondary": "#feca57",
+            "accent": "#ff9ff3",
+            "bg": "#2d3436",
+            "text": "#ffffff"
+        },
+        "Nature Fresh": {
+            "primary": "#00b894",
+            "secondary": "#00cec9",
+            "accent": "#55efc4",
+            "bg": "#1e272e",
+            "text": "#ffffff"
+        },
+        "Corporate Pro": {
+            "primary": "#2c3e50",
+            "secondary": "#34495e",
+            "accent": "#3498db",
+            "bg": "#ecf0f1",
+            "text": "#2c3e50"
+        }
+    }
+
+    selected_template = st.selectbox(
+        "Quick Apply Template",
+        ["Select a template..."] + list(template_options.keys())
+    )
+
+    if selected_template != "Select a template..." and st.button("🎨 Apply Template", use_container_width=True):
+        template = template_options[selected_template]
+        st.session_state.theme = BrandTheme(
+            name=selected_template,
+            primary_color=template["primary"],
+            secondary_color=template["secondary"],
+            accent_color=template["accent"],
+            background_color=template["bg"],
+            text_color=template["text"],
+            font_family="Arial"
+        )
+        st.success(f"✅ Applied '{selected_template}' template!")
+        st.rerun()
+
+    st.divider()
+
+    # Content Pillars for Brand Strategists
+    st.subheader("📚 Content Pillars")
+    st.markdown("""
+    <div style="background: rgba(37, 99, 235, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(37, 99, 235, 0.3); margin-bottom: 10px;">
+        <p style="color: #60a5fa; font-size: 0.85rem; margin: 0;">
+        <strong>💡 Pro Tip:</strong> Rotate between these content types for maximum engagement:
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    content_pillars = [
+        "📖 Educational Tips",
+        "🎯 Industry Insights",
+        "💬 Behind the Scenes",
+        "🏆 Client Success Stories",
+        "❓ FAQ & Myth Busters",
+        "🔥 Trending Topics"
+    ]
+
+    for pillar in content_pillars:
+        st.markdown(f"<p style='color: #e0e0e0; margin: 4px 0; font-size: 0.9rem;'>• {pillar}</p>", unsafe_allow_html=True)
+
+    st.divider()
+
+    # Engagement Optimizer
+    st.subheader("📈 Engagement Tips")
+
+    engagement_tips = st.expander("Best Posting Practices", expanded=False)
+    with engagement_tips:
+        st.markdown("""
+        **🕐 Best Times to Post:**
+        - Weekdays: 11am-1pm, 7-9pm
+        - Weekends: 10am-12pm
+
+        **📱 Carousel Best Practices:**
+        - 5-10 slides perform best
+        - First slide = hook (stop the scroll!)
+        - Last slide = strong CTA
+        - Use consistent branding
+        - Add text overlays for accessibility
+
+        **#️⃣ Hashtag Strategy:**
+        - Mix of popular + niche tags
+        - 20-30 hashtags optimal
+        - Save hashtag sets for reuse
+        """)
+
+    st.divider()
+
     # Elite Performance Dashboard
     st.subheader("📊 Elite Performance Dashboard")
     
@@ -1424,9 +1888,9 @@ with tab3:
             # Display current slide
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
-                st.image(st.session_state.generated_images[current_slide], 
+                st.image(st.session_state.generated_images[current_slide],
                         caption=f"Slide {current_slide + 1} of {len(st.session_state.generated_images)}",
-                        use_column_width=True)
+                        use_container_width=True)
             
             # Export options
             st.divider()
