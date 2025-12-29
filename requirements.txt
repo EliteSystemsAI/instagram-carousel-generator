@@ -2,3 +2,4 @@ streamlit==1.52.2
 pillow==12.0.0
 anthropic==0.75.0
 python-dotenv==1.0.1
+psutil==5.9.6

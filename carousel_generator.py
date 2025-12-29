@@ -15,9 +15,107 @@ import base64
 from pathlib import Path
 import anthropic
 from dotenv import load_dotenv
+import logging
+import re
+import traceback
+import time
+import psutil
+from dataclasses import asdict
 
 # Load environment variables
 load_dotenv()
+
+# Configure logging for production
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),  # Console output
+        logging.FileHandler('carousel_generator.log', mode='a')  # File output
+    ]
+)
+
+logger = logging.getLogger(__name__)
+
+# Analytics and Performance Tracking
+class EliteAnalytics:
+    """Elite Systems AI Analytics Tracker"""
+    
+    def __init__(self):
+        self.session_start = time.time()
+        self.events = []
+        self.performance_metrics = {}
+        
+    def track_event(self, event_type: str, event_data: dict = None):
+        """Track user events and system performance"""
+        timestamp = time.time()
+        
+        event = {
+            'timestamp': timestamp,
+            'event_type': event_type,
+            'session_duration': timestamp - self.session_start,
+            'system_info': self._get_system_info(),
+            'data': event_data or {}
+        }
+        
+        self.events.append(event)
+        logger.info(f"Analytics: {event_type} - {event_data}")
+        
+    def _get_system_info(self):
+        """Get current system performance metrics"""
+        try:
+            return {
+                'cpu_percent': psutil.cpu_percent(interval=0.1),
+                'memory_percent': psutil.virtual_memory().percent,
+                'memory_available_gb': round(psutil.virtual_memory().available / (1024**3), 2)
+            }
+        except:
+            return {'cpu_percent': 0, 'memory_percent': 0, 'memory_available_gb': 0}
+    
+    def track_generation_performance(self, slides_count: int, generation_time: float, success: bool):
+        """Track carousel generation performance"""
+        self.track_event('carousel_generation', {
+            'slides_count': slides_count,
+            'generation_time_seconds': generation_time,
+            'success': success,
+            'avg_time_per_slide': generation_time / slides_count if slides_count > 0 else 0
+        })
+    
+    def track_ai_usage(self, provider: str, success: bool, response_time: float = None):
+        """Track AI API usage"""
+        self.track_event('ai_api_usage', {
+            'provider': provider,
+            'success': success,
+            'response_time_seconds': response_time
+        })
+    
+    def track_export(self, format_type: str, slides_count: int):
+        """Track export events"""
+        self.track_event('export', {
+            'format': format_type,
+            'slides_count': slides_count
+        })
+    
+    def get_session_summary(self):
+        """Get analytics summary for the session"""
+        total_events = len(self.events)
+        session_duration = time.time() - self.session_start
+        
+        event_types = {}
+        for event in self.events:
+            event_type = event['event_type']
+            event_types[event_type] = event_types.get(event_type, 0) + 1
+        
+        return {
+            'session_duration_minutes': round(session_duration / 60, 2),
+            'total_events': total_events,
+            'event_breakdown': event_types,
+            'final_system_info': self._get_system_info()
+        }
+
+# Initialize analytics
+if 'analytics' not in st.session_state:
+    st.session_state.analytics = EliteAnalytics()
 
 # Page config
 st.set_page_config(
@@ -256,114 +354,136 @@ class CarouselGenerator:
     MIN_FONT_SIZE = 24
     MAX_FONT_SIZE = 80
     
+    # Font cache for performance optimization
+    _font_cache = {}
+    
     def __init__(self, theme: BrandTheme):
         self.theme = theme
         self.slides = []
         
     def create_slide(self, slide: CarouselSlide, custom_sizes: Dict = None) -> Image.Image:
         """Create a single carousel slide with intelligent text positioning"""
-        # Create base image
-        img = Image.new('RGB', self.INSTAGRAM_SIZE, color='white')
-        draw = ImageDraw.Draw(img)
-        
-        # Apply background
-        if slide.background_style == "gradient":
-            self._apply_gradient(img, self.theme.primary_color, self.theme.secondary_color)
-        elif slide.background_style == "solid":
-            img = Image.new('RGB', self.INSTAGRAM_SIZE, self.theme.background_color)
+        try:
+            logger.info(f"Creating slide {slide.slide_number}: {slide.title[:50]}...")
+            
+            # Create base image
+            img = Image.new('RGB', self.INSTAGRAM_SIZE, color='white')
             draw = ImageDraw.Draw(img)
             
-        # Calculate available content area (excluding indicators and watermark)
-        content_top = self.TEXT_PADDING
-        content_bottom = self.INSTAGRAM_SIZE[1] - 120  # Leave space for indicators
-        available_height = content_bottom - content_top
-        
-        # Calculate layout parameters
-        layout_info = self._calculate_layout_parameters(slide, available_height)
-        
-        if slide.layout == "center":
-            x_offset = self.INSTAGRAM_SIZE[0] // 2
-            align = "center"
-        elif slide.layout == "left":
-            x_offset = self.TEXT_PADDING + 20
-            align = "left"
-        else:
-            x_offset = self.INSTAGRAM_SIZE[0] - self.TEXT_PADDING - 20
-            align = "right"
-        
-        # Optimize content for available space
-        optimized_slide = self._optimize_content_for_space(slide)
-        
-        # Start positioning from calculated top
-        current_y = content_top + layout_info['top_margin']
-        
-        # Draw slide number indicator
-        self._draw_slide_indicator(draw, slide.slide_number)
-        
-        # Get fonts with custom sizes if provided
-        if custom_sizes:
-            fonts = self._load_fonts_with_emoji_support(custom_sizes)
-        else:
-            fonts = {
-                'title': self._get_adaptive_font(optimized_slide.title or "", layout_info['title_font_size']),
-                'subtitle': self._get_adaptive_font(optimized_slide.subtitle or "", layout_info['subtitle_font_size']),
-                'body': self._get_adaptive_font(optimized_slide.body_text or "", layout_info['body_font_size']),
-                'bullet': self._get_adaptive_font("", layout_info['bullet_font_size'])
-            }
-        
-        # Draw title with dynamic font sizing and effects
-        if optimized_slide.title:
-            title_height = self._draw_text_with_effects(
-                draw, optimized_slide.title, (x_offset, current_y),
-                title_font, self.theme.text_color, align, 
-                max_width=self.SAFE_ZONE, add_shadow=True
-            )
-            current_y += title_height + self.SECTION_SPACING
+            # Apply background
+            if slide.background_style == "gradient":
+                self._apply_gradient(img, self.theme.primary_color, self.theme.secondary_color)
+            elif slide.background_style == "solid":
+                img = Image.new('RGB', self.INSTAGRAM_SIZE, self.theme.background_color)
+                draw = ImageDraw.Draw(img)
             
-        # Draw subtitle with improved contrast
-        if optimized_slide.subtitle:
-            subtitle_font = self._get_adaptive_font(optimized_slide.subtitle, layout_info['subtitle_font_size'])
-            # Choose subtitle color based on background for better contrast
-            subtitle_color = self._get_contrast_color(slide.background_style, is_subtitle=True)
-            subtitle_height = self._draw_text_with_effects(
-                draw, optimized_slide.subtitle, (x_offset, current_y),
-                subtitle_font, subtitle_color, align, 
-                max_width=self.SAFE_ZONE, add_shadow=True
-            )
-            current_y += subtitle_height + self.SECTION_SPACING
+            # Calculate available content area (excluding indicators and watermark)
+            content_top = self.TEXT_PADDING
+            content_bottom = self.INSTAGRAM_SIZE[1] - 120  # Leave space for indicators
+            available_height = content_bottom - content_top
             
-        # Draw body text
-        if optimized_slide.body_text:
-            body_font = self._get_adaptive_font(optimized_slide.body_text, layout_info['body_font_size'])
-            body_height = self._draw_text_with_effects(
-                draw, optimized_slide.body_text, (x_offset, current_y),
-                body_font, self.theme.text_color, align, 
-                max_width=self.SAFE_ZONE, add_shadow=False
-            )
-            current_y += body_height + self.SECTION_SPACING
+            # Calculate layout parameters
+            layout_info = self._calculate_layout_parameters(slide, available_height)
             
-        # Draw bullet points with proper spacing
-        if optimized_slide.bullet_points:
-            bullet_font = self._get_adaptive_font("• Sample bullet point", layout_info['bullet_font_size'])
-            for bullet in optimized_slide.bullet_points:
-                bullet_text = f"• {bullet}"
-                bullet_x = x_offset if optimized_slide.layout == "center" else x_offset + 20
-                bullet_align = "left" if optimized_slide.layout != "right" else "left"
-                bullet_height = self._draw_text_with_effects(
-                    draw, bullet_text, (bullet_x, current_y),
-                    bullet_font, self.theme.text_color, bullet_align, 
-                    max_width=self.SAFE_ZONE - 40, add_shadow=False
+            if slide.layout == "center":
+                x_offset = self.INSTAGRAM_SIZE[0] // 2
+                align = "center"
+            elif slide.layout == "left":
+                x_offset = self.TEXT_PADDING + 20
+                align = "left"
+            else:
+                x_offset = self.INSTAGRAM_SIZE[0] - self.TEXT_PADDING - 20
+                align = "right"
+            
+            # Optimize content for available space
+            optimized_slide = self._optimize_content_for_space(slide)
+            
+            # Start positioning from calculated top
+            current_y = content_top + layout_info['top_margin']
+            
+            # Draw slide number indicator
+            self._draw_slide_indicator(draw, slide.slide_number)
+            
+            # Get fonts with custom sizes if provided
+            if custom_sizes:
+                fonts = self._load_fonts_with_emoji_support(custom_sizes)
+            else:
+                fonts = {
+                    'title': self._get_adaptive_font(optimized_slide.title or "", layout_info['title_font_size']),
+                    'subtitle': self._get_adaptive_font(optimized_slide.subtitle or "", layout_info['subtitle_font_size']),
+                    'body': self._get_adaptive_font(optimized_slide.body_text or "", layout_info['body_font_size']),
+                    'bullet': self._get_adaptive_font("", layout_info['bullet_font_size'])
+                }
+            
+            # Draw title with dynamic font sizing and effects
+            if optimized_slide.title:
+                title_height = self._draw_text_with_effects(
+                    draw, optimized_slide.title, (x_offset, current_y),
+                    fonts['title'], self.theme.text_color, align, 
+                    max_width=self.SAFE_ZONE, add_shadow=True
                 )
-                current_y += bullet_height + (self.SECTION_SPACING // 2)
+                current_y += title_height + self.SECTION_SPACING
                 
-                # Check if we're running out of space
-                if current_y > content_bottom - 50:
-                    break
+            # Draw subtitle with improved contrast
+            if optimized_slide.subtitle:
+                # Choose subtitle color based on background for better contrast
+                subtitle_color = self._get_contrast_color(slide.background_style, is_subtitle=True)
+                subtitle_height = self._draw_text_with_effects(
+                    draw, optimized_slide.subtitle, (x_offset, current_y),
+                    fonts['subtitle'], subtitle_color, align, 
+                    max_width=self.SAFE_ZONE, add_shadow=True
+                )
+                current_y += subtitle_height + self.SECTION_SPACING
                 
-        # Add brand watermark
-        self._add_watermark(draw)
-        
-        return img
+            # Draw body text
+            if optimized_slide.body_text:
+                body_height = self._draw_text_with_effects(
+                    draw, optimized_slide.body_text, (x_offset, current_y),
+                    fonts['body'], self.theme.text_color, align, 
+                    max_width=self.SAFE_ZONE, add_shadow=False
+                )
+                current_y += body_height + self.SECTION_SPACING
+                
+            # Draw bullet points with proper spacing
+            if optimized_slide.bullet_points:
+                for bullet in optimized_slide.bullet_points:
+                    bullet_text = f"• {bullet}"
+                    bullet_x = x_offset if optimized_slide.layout == "center" else x_offset + 20
+                    bullet_align = "left" if optimized_slide.layout != "right" else "left"
+                    bullet_height = self._draw_text_with_effects(
+                        draw, bullet_text, (bullet_x, current_y),
+                        fonts['bullet'], self.theme.text_color, bullet_align, 
+                        max_width=self.SAFE_ZONE - 40, add_shadow=False
+                    )
+                    current_y += bullet_height + (self.SECTION_SPACING // 2)
+                    
+                    # Check if we're running out of space
+                    if current_y > content_bottom - 50:
+                        break
+                
+            # Add brand watermark
+            self._add_watermark(draw)
+            
+            logger.info(f"Successfully created slide {slide.slide_number}")
+            return img
+            
+        except Exception as e:
+            logger.error(f"Failed to create slide {slide.slide_number}: {str(e)}")
+            logger.error(f"Slide details: {slide}")
+            logger.error(f"Exception traceback: {traceback.format_exc()}")
+            
+            # Return a basic error slide
+            error_img = Image.new('RGB', self.INSTAGRAM_SIZE, color='#ff0000')
+            error_draw = ImageDraw.Draw(error_img)
+            try:
+                error_font = ImageFont.load_default()
+                error_draw.text((50, 500), f"Error creating slide {slide.slide_number}", 
+                              fill='white', font=error_font)
+                error_draw.text((50, 550), f"Error: {str(e)[:100]}", 
+                              fill='white', font=error_font)
+            except:
+                pass  # If even error rendering fails, return blank red image
+            return error_img
     
     def _load_fonts_with_emoji_support(self, custom_sizes: Dict):
         """Load fonts with better emoji support"""
@@ -485,7 +605,7 @@ class CarouselGenerator:
         return final_sizes
     
     def _get_adaptive_font(self, text: str, base_size: int) -> ImageFont.ImageFont:
-        """Get font with size adapted to text length"""
+        """Get font with size adapted to text length - with caching for performance"""
         # Further reduce font size for very long text
         char_count = len(text)
         if char_count > 100:
@@ -493,11 +613,24 @@ class CarouselGenerator:
             adjusted_size = max(self.MIN_FONT_SIZE, base_size - size_reduction)
         else:
             adjusted_size = base_size
+        
+        # Create cache key
+        cache_key = f"{self.theme.font_family}_{adjusted_size}"
+        
+        # Check cache first
+        if cache_key in self._font_cache:
+            return self._font_cache[cache_key]
             
+        # Load font and cache it
         try:
-            return ImageFont.truetype(self.theme.font_family, adjusted_size)
+            font = ImageFont.truetype(self.theme.font_family, adjusted_size)
+            self._font_cache[cache_key] = font
+            return font
         except:
-            return ImageFont.load_default()
+            # Cache the default font too
+            default_font = ImageFont.load_default()
+            self._font_cache[cache_key] = default_font
+            return default_font
     
     def _measure_text_height(self, draw, text: str, font: ImageFont.ImageFont, max_width: int) -> int:
         """Measure the total height needed for wrapped text"""
@@ -705,8 +838,77 @@ class CarouselGenerator:
         
         draw.text((x, y), text, fill=self.theme.text_color, font=font)
 
+def sanitize_json_string(text: str) -> str:
+    """Sanitize JSON string by removing invalid control characters"""
+    if not text:
+        return text
+    
+    # Remove control characters except tab, newline, and carriage return
+    sanitized = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]', '', text)
+    
+    # Replace problematic quotes and ensure proper escaping
+    sanitized = sanitized.replace('\u201c', '"').replace('\u201d', '"')
+    sanitized = sanitized.replace('\u2018', "'").replace('\u2019', "'")
+    
+    return sanitized
+
+def extract_json_from_text(text: str) -> Optional[Dict]:
+    """Extract and parse JSON from potentially malformed text response"""
+    try:
+        # First try direct parsing
+        sanitized = sanitize_json_string(text)
+        return json.loads(sanitized)
+    except json.JSONDecodeError:
+        try:
+            # Try to find JSON block in the text
+            json_patterns = [
+                r'```json\s*({.*?})\s*```',
+                r'```\s*({.*?})\s*```',
+                r'({.*?})',
+                r'\[{.*?}\]'
+            ]
+            
+            for pattern in json_patterns:
+                matches = re.findall(pattern, text, re.DOTALL | re.IGNORECASE)
+                for match in matches:
+                    try:
+                        sanitized_match = sanitize_json_string(match)
+                        parsed = json.loads(sanitized_match)
+                        if isinstance(parsed, dict) and len(parsed) > 0:
+                            return parsed
+                    except json.JSONDecodeError:
+                        continue
+        except Exception:
+            pass
+    
+    return None
+
+def validate_ai_response(response_data: Dict) -> bool:
+    """Validate that AI response contains required fields"""
+    required_fields = ['hook_slide', 'content_slides', 'cta_slide']
+    
+    for field in required_fields:
+        if field not in response_data:
+            return False
+    
+    # Validate hook_slide structure
+    if not isinstance(response_data['hook_slide'], dict) or 'title' not in response_data['hook_slide']:
+        return False
+    
+    # Validate content_slides structure
+    if not isinstance(response_data['content_slides'], list) or len(response_data['content_slides']) == 0:
+        return False
+    
+    # Validate cta_slide structure
+    if not isinstance(response_data['cta_slide'], dict) or 'title' not in response_data['cta_slide']:
+        return False
+    
+    return True
+
 def get_ai_suggestions(content_idea: str, num_slides: int = 5) -> Dict:
     """Get AI-powered content suggestions for carousel"""
+    start_time = time.time()
+    
     # Try Claude API first
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if api_key and api_key != "YOUR_CLAUDE_API_KEY_HERE":
@@ -731,21 +933,36 @@ def get_ai_suggestions(content_idea: str, num_slides: int = 5) -> Dict:
                 messages=[{"role": "user", "content": prompt}]
             )
             
-            # Parse response
+            # Parse response with enhanced error handling
             content = response.content[0].text
+            
             try:
-                return json.loads(content)
-            except:
-                # Try to extract JSON from the response
-                import re
-                json_match = re.search(r'\{.*\}', content, re.DOTALL)
-                if json_match:
-                    return json.loads(json_match.group())
+                # Use our improved JSON extraction
+                parsed_response = extract_json_from_text(content)
+                
+                if parsed_response and validate_ai_response(parsed_response):
+                    # Track successful AI usage
+                    response_time = time.time() - start_time
+                    if 'analytics' in st.session_state:
+                        st.session_state.analytics.track_ai_usage('claude', True, response_time)
+                    return parsed_response
+                else:
+                    st.warning("AI response validation failed. Using fallback content.")
+                    if 'analytics' in st.session_state:
+                        st.session_state.analytics.track_ai_usage('claude', False, time.time() - start_time)
+                    return generate_fallback_content(content_idea, num_slides)
                     
-                # Fallback structure if JSON parsing fails
+            except Exception as parse_error:
+                st.error(f"JSON parsing error: {str(parse_error)}")
+                logging.error(f"Claude API JSON parsing failed: {parse_error}")
+                logging.debug(f"Raw response content: {content[:500]}...")  # Log first 500 chars
+                if 'analytics' in st.session_state:
+                    st.session_state.analytics.track_ai_usage('claude', False, time.time() - start_time)
                 return generate_fallback_content(content_idea, num_slides)
         except Exception as e:
             st.warning(f"Claude API failed: {e}")
+            if 'analytics' in st.session_state:
+                st.session_state.analytics.track_ai_usage('claude', False, time.time() - start_time)
             
     # Try OpenAI API as fallback
     openai_key = os.getenv("OPENAI_API_KEY")
@@ -771,7 +988,18 @@ def get_ai_suggestions(content_idea: str, num_slides: int = 5) -> Dict:
             )
             
             content = response.choices[0].message.content
-            return json.loads(content)
+            
+            try:
+                parsed_response = extract_json_from_text(content)
+                if parsed_response and validate_ai_response(parsed_response):
+                    return parsed_response
+                else:
+                    st.warning("OpenAI response validation failed. Using fallback content.")
+                    return generate_fallback_content(content_idea, num_slides)
+            except Exception as parse_error:
+                st.error(f"OpenAI JSON parsing error: {str(parse_error)}")
+                logging.error(f"OpenAI API JSON parsing failed: {parse_error}")
+                return generate_fallback_content(content_idea, num_slides)
         except Exception as e:
             st.warning(f"OpenAI API also failed: {e}")
             
@@ -910,6 +1138,46 @@ with st.sidebar:
                 st.error(f"Failed to load theme: {e}")
         else:
             st.error("No saved theme found. Save a theme first!")
+    
+    st.divider()
+    
+    # Elite Performance Dashboard
+    st.subheader("📊 Elite Performance Dashboard")
+    
+    # System metrics
+    try:
+        cpu_percent = psutil.cpu_percent(interval=0.1)
+        memory = psutil.virtual_memory()
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("CPU Usage", f"{cpu_percent:.1f}%")
+            st.metric("Memory", f"{memory.percent:.1f}%")
+        with col2:
+            st.metric("Available RAM", f"{memory.available / (1024**3):.1f} GB")
+            st.metric("Font Cache", f"{len(CarouselGenerator._font_cache)} fonts")
+    except Exception:
+        st.info("Performance metrics unavailable")
+    
+    # Session analytics summary
+    if hasattr(st.session_state, 'analytics'):
+        summary = st.session_state.analytics.get_session_summary()
+        
+        st.metric("Session Duration", f"{summary['session_duration_minutes']:.1f} min")
+        st.metric("Total Events", summary['total_events'])
+        
+        if summary['event_breakdown']:
+            st.write("**Activity Breakdown:**")
+            for event_type, count in summary['event_breakdown'].items():
+                st.write(f"• {event_type}: {count}")
+    
+    # Elite branding
+    st.markdown("""
+    ---
+    **🚀 Elite Systems AI**
+    
+    *Professional-grade analytics and performance monitoring for enterprise-level content creation*
+    """)
 
 # Main content area
 tab1, tab2, tab3 = st.tabs(["✨ AI Content Generator", "✏️ Manual Editor", "👁️ Preview & Export"])
@@ -933,51 +1201,69 @@ with tab1:
     
     if st.button("🤖 Generate Content", type="primary", use_container_width=True):
         if content_idea:
-            with st.spinner("Generating AI content..."):
-                suggestions = get_ai_suggestions(content_idea, num_slides)
+            progress_container = st.empty()
+            status_container = st.empty()
+            
+            with st.spinner("Connecting to AI services..."):
+                progress_container.progress(0)
+                status_container.info("🔗 Initializing AI connection...")
                 
-                if suggestions:
-                    # Create slides from AI suggestions
-                    st.session_state.slides = []
+                try:
+                    suggestions = get_ai_suggestions(content_idea, num_slides)
+                    progress_container.progress(1.0)
+                    status_container.success("✅ Content generated successfully!")
                     
-                    # Hook slide
-                    st.session_state.slides.append(CarouselSlide(
-                        slide_number=1,
-                        title=suggestions['hook_slide']['title'],
-                        subtitle=suggestions['hook_slide'].get('subtitle', ''),
-                        layout="center",
-                        background_style="gradient"
-                    ))
-                    
-                    # Content slides
-                    for i, slide_data in enumerate(suggestions['content_slides'], start=2):
+                    if suggestions:
+                        # Create slides from AI suggestions
+                        status_container.info("🎨 Creating carousel slides...")
+                        st.session_state.slides = []
+                        
+                        # Hook slide
                         st.session_state.slides.append(CarouselSlide(
-                            slide_number=i,
-                            title=slide_data.get('title', f'Slide {i}'),
-                            subtitle=slide_data.get('subtitle', ''),
-                            bullet_points=slide_data.get('bullet_points', []),
-                            layout="left",
+                            slide_number=1,
+                            title=suggestions['hook_slide']['title'],
+                            subtitle=suggestions['hook_slide'].get('subtitle', ''),
+                            layout="center",
                             background_style="gradient"
                         ))
-                    
-                    # CTA slide
-                    st.session_state.slides.append(CarouselSlide(
-                        slide_number=num_slides,
-                        title=suggestions['cta_slide']['title'],
-                        subtitle=suggestions['cta_slide'].get('subtitle', ''),
-                        body_text=suggestions['cta_slide'].get('action_text', ''),
-                        layout="center",
-                        background_style="gradient"
-                    ))
-                    
-                    st.success("✅ Content generated! Check the Preview tab")
-                    
-                    # Display caption and hashtags
-                    st.subheader("📝 Suggested Caption")
-                    st.text_area("Caption", value=suggestions.get('caption', ''), height=150)
-                    
-                    st.subheader("#️⃣ Suggested Hashtags")
-                    st.code(' '.join(suggestions.get('hashtags', [])))
+                        
+                        # Content slides
+                        for i, slide_data in enumerate(suggestions['content_slides'], start=2):
+                            st.session_state.slides.append(CarouselSlide(
+                                slide_number=i,
+                                title=slide_data.get('title', f'Slide {i}'),
+                                subtitle=slide_data.get('subtitle', ''),
+                                bullet_points=slide_data.get('bullet_points', []),
+                                layout="left",
+                                background_style="gradient"
+                            ))
+                        
+                        # CTA slide
+                        st.session_state.slides.append(CarouselSlide(
+                            slide_number=num_slides,
+                            title=suggestions['cta_slide']['title'],
+                            subtitle=suggestions['cta_slide'].get('subtitle', ''),
+                            body_text=suggestions['cta_slide'].get('action_text', ''),
+                            layout="center",
+                            background_style="gradient"
+                        ))
+                        
+                        status_container.success("✅ Content generated! Check the Preview tab")
+                        
+                        # Display caption and hashtags
+                        st.subheader("📝 Suggested Caption")
+                        st.text_area("Caption", value=suggestions.get('caption', ''), height=150)
+                        
+                        st.subheader("#️⃣ Suggested Hashtags")
+                        st.code(' '.join(suggestions.get('hashtags', [])))
+                    else:
+                        status_container.error("❌ Failed to generate content. Please try again.")
+                        
+                except Exception as e:
+                    logger.error(f"Content generation failed: {str(e)}")
+                    progress_container.empty()
+                    status_container.error(f"❌ Content generation failed: {str(e)}")
+                    st.error("Something went wrong with content generation. Please check your API keys and try again.")
         else:
             st.warning("Please enter a content idea")
 
@@ -1072,24 +1358,57 @@ with tab3:
     if st.session_state.slides:
         # Generate preview
         if st.button("🎨 Generate Preview", type="primary", use_container_width=True):
-            generator = CarouselGenerator(st.session_state.theme)
-            st.session_state.generated_images = []
-            
-            # Get custom font sizes from sidebar
-            custom_sizes = {
-                'title': title_size,
-                'subtitle': subtitle_size, 
-                'body': body_size,
-                'bullet': bullet_size
-            }
-            
-            progress_bar = st.progress(0)
-            for i, slide in enumerate(st.session_state.slides):
-                img = generator.create_slide(slide, custom_sizes)
-                st.session_state.generated_images.append(img)
-                progress_bar.progress((i + 1) / len(st.session_state.slides))
-            
-            st.success("✅ Preview generated!")
+            try:
+                generator = CarouselGenerator(st.session_state.theme)
+                st.session_state.generated_images = []
+                
+                # Get custom font sizes from sidebar
+                custom_sizes = {
+                    'title': title_size,
+                    'subtitle': subtitle_size, 
+                    'body': body_size,
+                    'bullet': bullet_size
+                }
+                
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+                
+                logger.info(f"Starting generation of {len(st.session_state.slides)} slides")
+                
+                generation_start = time.time()
+                successful_slides = 0
+                
+                for i, slide in enumerate(st.session_state.slides):
+                    status_text.text(f"Generating slide {i + 1} of {len(st.session_state.slides)}: {slide.title[:30]}...")
+                    
+                    try:
+                        img = generator.create_slide(slide, custom_sizes)
+                        st.session_state.generated_images.append(img)
+                        successful_slides += 1
+                        progress_bar.progress((i + 1) / len(st.session_state.slides))
+                        
+                    except Exception as slide_error:
+                        logger.error(f"Failed to generate slide {i + 1}: {str(slide_error)}")
+                        status_text.error(f"Failed to generate slide {i + 1}: {str(slide_error)}")
+                        continue
+                
+                generation_time = time.time() - generation_start
+                generation_success = successful_slides == len(st.session_state.slides)
+                
+                # Track generation performance
+                st.session_state.analytics.track_generation_performance(
+                    len(st.session_state.slides), 
+                    generation_time, 
+                    generation_success
+                )
+                
+                status_text.success("✅ Preview generated successfully!")
+                logger.info(f"Successfully generated {successful_slides}/{len(st.session_state.slides)} slides in {generation_time:.2f}s")
+                
+            except Exception as e:
+                logger.error(f"Preview generation failed: {str(e)}")
+                st.error(f"❌ Preview generation failed: {str(e)}")
+                st.error("Please check the logs for detailed error information.")
         
         # Display preview
         if st.session_state.generated_images:
@@ -1118,6 +1437,7 @@ with tab3:
             with col1:
                 # Download individual images
                 if st.button("📥 Download All Images", use_container_width=True):
+                    st.session_state.analytics.track_export("individual_images", len(st.session_state.generated_images))
                     for i, img in enumerate(st.session_state.generated_images):
                         buffer = io.BytesIO()
                         img.save(buffer, format='PNG', quality=100)
@@ -1137,6 +1457,7 @@ with tab3:
             with col2:
                 # Save to project folder
                 if st.button("💾 Save to Project", use_container_width=True):
+                    st.session_state.analytics.track_export("project_save", len(st.session_state.generated_images))
                     output_dir = Path("carousel_output")
                     output_dir.mkdir(exist_ok=True)
                     
@@ -1152,6 +1473,7 @@ with tab3:
                 # Generate PDF
                 if st.button("📄 Export as PDF", use_container_width=True):
                     if st.session_state.generated_images:
+                        st.session_state.analytics.track_export("pdf", len(st.session_state.generated_images))
                         pdf_buffer = io.BytesIO()
                         st.session_state.generated_images[0].save(
                             pdf_buffer,
