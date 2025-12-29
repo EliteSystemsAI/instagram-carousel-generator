@@ -1477,6 +1477,8 @@ if 'theme' not in st.session_state:
     )
 if 'generated_images' not in st.session_state:
     st.session_state.generated_images = []
+if 'show_download_buttons' not in st.session_state:
+    st.session_state.show_download_buttons = False
 
 # Main UI with Elite Systems AI branding
 st.markdown('''
@@ -1985,19 +1987,26 @@ with tab3:
             col1, col2, col3 = st.columns(3)
             
             with col1:
-                # Download individual images
-                if st.button("📥 Download All Images", use_container_width=True):
-                    st.session_state.analytics.track_export("individual_images", len(st.session_state.generated_images))
+                # Download individual images - toggle to show/hide
+                button_label = "📥 Hide Downloads" if st.session_state.show_download_buttons else "📥 Download All Images"
+                if st.button(button_label, use_container_width=True, key="toggle_downloads"):
+                    st.session_state.show_download_buttons = not st.session_state.show_download_buttons
+                    if st.session_state.show_download_buttons:
+                        st.session_state.analytics.track_export("individual_images", len(st.session_state.generated_images))
+                    st.rerun()
+
+                # Always show download buttons if expanded
+                if st.session_state.show_download_buttons:
                     for i, img in enumerate(st.session_state.generated_images):
                         buffer = io.BytesIO()
                         img.save(buffer, format='PNG', quality=100)
                         buffer.seek(0)
-                        
+
                         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                         filename = f"carousel_{timestamp}_slide_{i+1}.png"
-                        
+
                         st.download_button(
-                            label=f"Download Slide {i+1}",
+                            label=f"⬇️ Slide {i+1}",
                             data=buffer,
                             file_name=filename,
                             mime="image/png",
