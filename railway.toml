@@ -1,0 +1,12 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+healthcheckPath = "/healthz"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
+
+[deploy.environmentVariables]
+PORT = "8080"
+STREAMLIT_SERVER_HEADLESS = "true"
+STREAMLIT_SERVER_ENABLE_CORS = "false"
