@@ -143,31 +143,58 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    /* Main content area */
+    /* Main content area - improved spacing */
     .main .block-container {
         background: transparent !important;
-        padding: 2rem 3rem 3rem 3rem !important;
-        max-width: 1200px !important;
+        padding: 1.5rem 4rem 3rem 4rem !important;
+        max-width: 1400px !important;
     }
 
     /* Improved padding for all containers */
     [data-testid="stVerticalBlock"] > div {
-        padding: 0.25rem 0 !important;
+        padding: 0.3rem 0 !important;
     }
 
-    /* Form elements spacing */
+    /* Form elements spacing - more breathing room */
     .stTextInput, .stTextArea, .stSelectbox, .stSlider {
-        margin-bottom: 0.75rem !important;
+        margin-bottom: 1rem !important;
     }
 
     /* Better spacing for columns */
     [data-testid="column"] {
-        padding: 0 0.5rem !important;
+        padding: 0 0.75rem !important;
     }
 
     /* Card-like containers */
     .element-container {
+        margin-bottom: 0.75rem !important;
+    }
+
+    /* Main heading area - centered and spaced */
+    .main-header {
+        font-size: 2.5rem !important;
         margin-bottom: 0.5rem !important;
+    }
+
+    .subtitle {
+        font-size: 1.1rem !important;
+        color: #9ca3af !important;
+        margin-bottom: 2rem !important;
+    }
+
+    /* Section headings in main area */
+    .main h2 {
+        font-size: 1.75rem !important;
+        margin-top: 1.5rem !important;
+        margin-bottom: 1.25rem !important;
+        color: #ffffff !important;
+    }
+
+    /* Labels for inputs */
+    .main label, .main p {
+        font-size: 0.95rem !important;
+        color: #e0e0e0 !important;
+        margin-bottom: 0.4rem !important;
     }
 
     /* ==========================================
@@ -380,45 +407,104 @@ st.markdown("""
 
     /* ==========================================
        INPUTS - MAIN AREA (DARK BACKGROUNDS)
+       ULTRA-SPECIFIC SELECTORS FOR STREAMLIT
        ========================================== */
 
+    /* Target ALL input variations with high specificity */
+    .main input,
+    .main textarea,
+    .main .stTextInput input,
+    .main .stTextArea textarea,
+    .main [data-baseweb="input"] input,
+    .main [data-baseweb="textarea"] textarea,
     .stTextInput > div > div > input,
-    .stTextArea > div > div > textarea {
-        background: rgba(15, 15, 25, 0.9) !important;
-        border: 1px solid rgba(37, 99, 235, 0.4) !important;
+    .stTextArea > div > div > textarea,
+    [data-testid="stTextInput"] input,
+    [data-testid="stTextArea"] textarea,
+    [data-testid="textInputRootElement"] input,
+    div[data-baseweb="input"] input,
+    div[data-baseweb="textarea"] textarea {
+        background: #0d0d15 !important;
+        background-color: #0d0d15 !important;
+        border: 1px solid rgba(37, 99, 235, 0.5) !important;
         border-radius: 10px !important;
         color: #ffffff !important;
         font-size: 1rem !important;
-        padding: 0.75rem 1rem !important;
+        padding: 0.85rem 1.1rem !important;
     }
 
-    .stTextInput > div > div > input::placeholder,
-    .stTextArea > div > div > textarea::placeholder {
-        color: rgba(255, 255, 255, 0.4) !important;
+    /* Placeholder text */
+    .main input::placeholder,
+    .main textarea::placeholder,
+    .stTextInput input::placeholder,
+    .stTextArea textarea::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+        opacity: 1 !important;
     }
 
-    .stTextInput > div > div > input:focus,
-    .stTextArea > div > div > textarea:focus {
+    /* Focus states */
+    .main input:focus,
+    .main textarea:focus,
+    .stTextInput input:focus,
+    .stTextArea textarea:focus {
         border-color: #3b82f6 !important;
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.4) !important;
-        background: rgba(20, 20, 35, 0.95) !important;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.5) !important;
+        background: #101020 !important;
+        background-color: #101020 !important;
+        outline: none !important;
     }
 
-    /* Text area specific styling */
-    .stTextArea > div > div > textarea {
-        min-height: 120px !important;
+    /* Text area specific styling - larger for content */
+    .stTextArea textarea,
+    .main .stTextArea textarea,
+    [data-testid="stTextArea"] textarea {
+        min-height: 140px !important;
+        line-height: 1.6 !important;
     }
 
-    .stSelectbox > div > div > div {
-        background: rgba(15, 15, 25, 0.9) !important;
-        border: 1px solid rgba(37, 99, 235, 0.4) !important;
+    /* Input container wrapper backgrounds */
+    .stTextInput > div,
+    .stTextArea > div,
+    [data-testid="stTextInput"] > div,
+    [data-testid="stTextArea"] > div {
+        background: transparent !important;
+    }
+
+    /* Selectbox styling */
+    .stSelectbox > div > div,
+    .stSelectbox [data-baseweb="select"] > div,
+    [data-testid="stSelectbox"] > div > div {
+        background: #0d0d15 !important;
+        background-color: #0d0d15 !important;
+        border: 1px solid rgba(37, 99, 235, 0.5) !important;
         border-radius: 8px !important;
         color: white !important;
-        min-height: 42px !important;
+        min-height: 44px !important;
     }
 
-    .stSelectbox > div > div > div:hover {
+    .stSelectbox > div > div:hover,
+    [data-testid="stSelectbox"] > div > div:hover {
         border-color: #3b82f6 !important;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    /* Dropdown menu styling */
+    [data-baseweb="popover"] {
+        background: #0d0d15 !important;
+        border: 1px solid rgba(37, 99, 235, 0.5) !important;
+    }
+
+    [data-baseweb="menu"] {
+        background: #0d0d15 !important;
+    }
+
+    [data-baseweb="menu"] li {
+        background: transparent !important;
+        color: #ffffff !important;
+    }
+
+    [data-baseweb="menu"] li:hover {
+        background: rgba(37, 99, 235, 0.3) !important;
     }
 
     /* ==========================================
@@ -653,10 +739,14 @@ class BrandTheme:
     primary_color: str = "#667eea"
     secondary_color: str = "#764ba2"
     accent_color: str = "#f093fb"
-    background_color: str = "#ffffff"
-    text_color: str = "#2d3436"
+    background_color: str = "#000000"  # Default to black for cleaner look
+    text_color: str = "#ffffff"
     font_family: str = "Arial"
     logo_path: Optional[str] = None
+    # New style options
+    brand_handle: str = ""  # e.g., "elite.systemsai"
+    show_verified_badge: bool = True
+    title_style: str = "bold_italic"  # bold, italic, bold_italic, regular
 
 @dataclass
 class CarouselSlide:
@@ -668,7 +758,9 @@ class CarouselSlide:
     bullet_points: List[str] = None
     image_path: Optional[str] = None
     layout: str = "center"  # center, left, right, split
-    background_style: str = "gradient"  # solid, gradient, image
+    background_style: str = "solid"  # solid, gradient, image (default to solid black)
+    emphasis_word: str = ""  # Word to emphasize differently in title
+    slide_type: str = "content"  # cover, content, cta
 
 class CarouselGenerator:
     """Generate Instagram carousel images with brand styling"""
@@ -689,48 +781,41 @@ class CarouselGenerator:
         self.slides = []
         
     def create_slide(self, slide: CarouselSlide, custom_sizes: Dict = None) -> Image.Image:
-        """Create a single carousel slide with intelligent text positioning"""
+        """Create a single carousel slide with intelligent text positioning - minimalist style"""
         try:
             logger.info(f"Creating slide {slide.slide_number}: {slide.title[:50]}...")
-            
-            # Create base image
-            img = Image.new('RGB', self.INSTAGRAM_SIZE, color='white')
+
+            # Create base image - default to pure black for clean look
+            img = Image.new('RGB', self.INSTAGRAM_SIZE, color='#000000')
             draw = ImageDraw.Draw(img)
-            
-            # Apply background
+
+            # Apply background based on style
             if slide.background_style == "gradient":
                 self._apply_gradient(img, self.theme.primary_color, self.theme.secondary_color)
-            elif slide.background_style == "solid":
-                img = Image.new('RGB', self.INSTAGRAM_SIZE, self.theme.background_color)
                 draw = ImageDraw.Draw(img)
-            
-            # Calculate available content area (excluding indicators and watermark)
+            elif slide.background_style == "solid":
+                bg_color = self.theme.background_color if self.theme.background_color else "#000000"
+                img = Image.new('RGB', self.INSTAGRAM_SIZE, bg_color)
+                draw = ImageDraw.Draw(img)
+
+            # Determine if this is a cover slide (first slide)
+            is_cover_slide = slide.slide_number == 1 or getattr(slide, 'slide_type', '') == 'cover'
+
+            # Calculate available content area
             content_top = self.TEXT_PADDING
-            content_bottom = self.INSTAGRAM_SIZE[1] - 120  # Leave space for indicators
+            content_bottom = self.INSTAGRAM_SIZE[1] - 100
             available_height = content_bottom - content_top
-            
+
             # Calculate layout parameters
             layout_info = self._calculate_layout_parameters(slide, available_height)
-            
-            if slide.layout == "center":
-                x_offset = self.INSTAGRAM_SIZE[0] // 2
-                align = "center"
-            elif slide.layout == "left":
-                x_offset = self.TEXT_PADDING + 20
-                align = "left"
-            else:
-                x_offset = self.INSTAGRAM_SIZE[0] - self.TEXT_PADDING - 20
-                align = "right"
-            
+
+            # Always center for clean minimalist look
+            x_offset = self.INSTAGRAM_SIZE[0] // 2
+            align = "center"
+
             # Optimize content for available space
             optimized_slide = self._optimize_content_for_space(slide)
-            
-            # Start positioning from calculated top
-            current_y = content_top + layout_info['top_margin']
-            
-            # Draw slide number indicator
-            self._draw_slide_indicator(draw, slide.slide_number)
-            
+
             # Get fonts with custom sizes if provided
             if custom_sizes:
                 fonts = self._load_fonts_with_emoji_support(custom_sizes)
@@ -741,55 +826,62 @@ class CarouselGenerator:
                     'body': self._get_adaptive_font(optimized_slide.body_text or "", layout_info['body_font_size']),
                     'bullet': self._get_adaptive_font("", layout_info['bullet_font_size'])
                 }
-            
-            # Draw title with dynamic font sizing and effects
+
+            # For cover slides: draw brand handle with verified badge
+            if is_cover_slide and self.theme.brand_handle:
+                self._draw_brand_handle(draw, img)
+                # Position title below brand handle
+                current_y = 440
+            else:
+                # For content slides, center vertically
+                current_y = content_top + layout_info['top_margin']
+
+            # Draw title with clean styling
             if optimized_slide.title:
                 title_height = self._draw_text_with_effects(
                     draw, optimized_slide.title, (x_offset, current_y),
-                    fonts['title'], self.theme.text_color, align, 
-                    max_width=self.SAFE_ZONE, add_shadow=True
+                    fonts['title'], "#ffffff", align,
+                    max_width=self.SAFE_ZONE, add_shadow=False
                 )
                 current_y += title_height + self.SECTION_SPACING
-                
-            # Draw subtitle with improved contrast
+
+            # Draw subtitle - slightly muted for hierarchy
             if optimized_slide.subtitle:
-                # Choose subtitle color based on background for better contrast
-                subtitle_color = self._get_contrast_color(slide.background_style, is_subtitle=True)
+                # Use slightly dimmer white for subtitle
+                subtitle_color = "#e0e0e0" if is_cover_slide else "#c0c0c0"
                 subtitle_height = self._draw_text_with_effects(
                     draw, optimized_slide.subtitle, (x_offset, current_y),
-                    fonts['subtitle'], subtitle_color, align, 
-                    max_width=self.SAFE_ZONE, add_shadow=True
+                    fonts['subtitle'], subtitle_color, align,
+                    max_width=self.SAFE_ZONE, add_shadow=False
                 )
                 current_y += subtitle_height + self.SECTION_SPACING
-                
+
             # Draw body text
             if optimized_slide.body_text:
                 body_height = self._draw_text_with_effects(
                     draw, optimized_slide.body_text, (x_offset, current_y),
-                    fonts['body'], self.theme.text_color, align, 
+                    fonts['body'], "#d0d0d0", align,
                     max_width=self.SAFE_ZONE, add_shadow=False
                 )
                 current_y += body_height + self.SECTION_SPACING
-                
+
             # Draw bullet points with proper spacing
             if optimized_slide.bullet_points:
                 for bullet in optimized_slide.bullet_points:
                     bullet_text = f"• {bullet}"
-                    bullet_x = x_offset if optimized_slide.layout == "center" else x_offset + 20
-                    bullet_align = "left" if optimized_slide.layout != "right" else "left"
                     bullet_height = self._draw_text_with_effects(
-                        draw, bullet_text, (bullet_x, current_y),
-                        fonts['bullet'], self.theme.text_color, bullet_align, 
+                        draw, bullet_text, (x_offset, current_y),
+                        fonts['bullet'], "#d0d0d0", align,
                         max_width=self.SAFE_ZONE - 40, add_shadow=False
                     )
                     current_y += bullet_height + (self.SECTION_SPACING // 2)
-                    
+
                     # Check if we're running out of space
                     if current_y > content_bottom - 50:
                         break
-                
-            # Add brand watermark
-            self._add_watermark(draw)
+
+            # Only show slide indicators for multi-slide carousels
+            # Skip watermark for cleaner look - brand handle serves this purpose
             
             logger.info(f"Successfully created slide {slide.slide_number}")
             return img
@@ -1077,19 +1169,72 @@ class CarouselGenerator:
         return len(lines) * line_height + (len(lines) - 1) * line_spacing
             
     def _draw_slide_indicator(self, draw, slide_number):
-        """Draw slide number indicator"""
-        indicator_size = 30
-        margin = 40
-        y = self.INSTAGRAM_SIZE[1] - margin - indicator_size
-        
+        """Draw slide number indicator - minimalist dots at bottom"""
+        indicator_size = 8  # Smaller, more subtle dots
+        spacing = 16
+        margin = 50
+        y = self.INSTAGRAM_SIZE[1] - margin
+
+        # Only show if more than 1 slide
+        total_width = (10 * indicator_size) + (9 * spacing)
+        start_x = (self.INSTAGRAM_SIZE[0] - total_width) // 2
+
         for i in range(10):  # Max 10 slides
-            x = margin + i * (indicator_size + 10)
+            x = start_x + i * (indicator_size + spacing)
             if i < slide_number:
-                color = self.theme.primary_color
+                color = "#ffffff"  # White filled for current/past
             else:
-                color = "#e0e0e0"
+                color = "#404040"  # Subtle grey for future
             draw.ellipse([x, y, x + indicator_size, y + indicator_size], fill=color)
-            
+
+    def _draw_brand_handle(self, draw, img):
+        """Draw brand handle with verified badge at top of slide"""
+        if not self.theme.brand_handle:
+            return 0  # Return 0 height if no handle
+
+        # Font for brand handle - smaller, clean
+        try:
+            handle_font = ImageFont.truetype(self.theme.font_family, 28)
+        except:
+            handle_font = ImageFont.load_default()
+
+        # Construct handle text
+        handle_text = self.theme.brand_handle
+
+        # Calculate position - centered at top
+        bbox = draw.textbbox((0, 0), handle_text, font=handle_font)
+        text_width = bbox[2] - bbox[0]
+
+        # Add verified badge width if enabled
+        badge_width = 30 if self.theme.show_verified_badge else 0
+        total_width = text_width + badge_width + 10
+
+        x = (self.INSTAGRAM_SIZE[0] - total_width) // 2
+        y = 380  # Position in upper-middle area
+
+        # Draw handle text
+        draw.text((x, y), handle_text, fill="#ffffff", font=handle_font)
+
+        # Draw verified badge (blue checkmark)
+        if self.theme.show_verified_badge:
+            badge_x = x + text_width + 10
+            badge_y = y + 2
+            badge_size = 24
+
+            # Blue circle background
+            draw.ellipse([badge_x, badge_y, badge_x + badge_size, badge_y + badge_size],
+                        fill="#1DA1F2")  # Twitter/IG blue
+
+            # White checkmark
+            check_points = [
+                (badge_x + 6, badge_y + 12),
+                (badge_x + 10, badge_y + 16),
+                (badge_x + 18, badge_y + 8)
+            ]
+            draw.line(check_points, fill="#ffffff", width=3)
+
+        return 60  # Return height used
+
     def _truncate_text_intelligently(self, text: str, max_length: int) -> str:
         """Intelligently truncate text while preserving meaning"""
         if len(text) <= max_length:
@@ -1469,11 +1614,13 @@ if 'theme' not in st.session_state:
     st.session_state.theme = BrandTheme(
         name="Elite Systems AI",
         primary_color="#2563eb",
-        secondary_color="#3b82f6", 
+        secondary_color="#3b82f6",
         accent_color="#ff3b3b",
         background_color="#000000",
         text_color="#ffffff",
-        font_family="Arial"
+        font_family="Arial",
+        brand_handle="elite.systemsai",
+        show_verified_badge=True
     )
 if 'generated_images' not in st.session_state:
     st.session_state.generated_images = []
@@ -1491,11 +1638,21 @@ st.markdown('''
 # Sidebar for configuration
 with st.sidebar:
     st.header("⚙️ Configuration")
-    
+
     # Brand Theme Settings
     st.subheader("🎨 Brand Theme")
     brand_name = st.text_input("Brand Name", value=st.session_state.theme.name)
-    
+
+    # Brand Handle for cover slides (like @elite.systemsai)
+    default_handle = getattr(st.session_state.theme, 'brand_handle', 'elite.systemsai')
+    brand_handle = st.text_input("Brand Handle", value=default_handle,
+                                  help="Shown on cover slide (e.g., elite.systemsai)")
+
+    # Verified badge toggle
+    default_verified = getattr(st.session_state.theme, 'show_verified_badge', True)
+    show_verified = st.checkbox("✓ Show Verified Badge", value=default_verified,
+                                help="Display blue checkmark next to brand handle")
+
     col1, col2 = st.columns(2)
     with col1:
         primary_color = st.color_picker("Primary Color", value=st.session_state.theme.primary_color)
@@ -1503,23 +1660,23 @@ with st.sidebar:
     with col2:
         secondary_color = st.color_picker("Secondary Color", value=st.session_state.theme.secondary_color)
         text_color = st.color_picker("Text Color", value=st.session_state.theme.text_color)
-    
+
     background_color = st.color_picker("Background Color", value=st.session_state.theme.background_color)
-    
+
     font_family = st.selectbox(
         "Font Family",
         ["Arial", "Helvetica", "Times", "Georgia", "Futura", "Impact"],
         index=0
     )
-    
+
     # Font Size Controls
     st.subheader("📝 Typography")
     title_size = st.slider("Title Font Size", min_value=40, max_value=100, value=68, step=4)
     subtitle_size = st.slider("Subtitle Font Size", min_value=30, max_value=80, value=48, step=4)
     body_size = st.slider("Body Font Size", min_value=24, max_value=60, value=36, step=2)
     bullet_size = st.slider("Bullet Font Size", min_value=20, max_value=50, value=32, step=2)
-    
-    # Update theme
+
+    # Update theme with all options
     st.session_state.theme = BrandTheme(
         name=brand_name,
         primary_color=primary_color,
@@ -1527,7 +1684,9 @@ with st.sidebar:
         accent_color=accent_color,
         background_color=background_color,
         text_color=text_color,
-        font_family=font_family
+        font_family=font_family,
+        brand_handle=brand_handle,
+        show_verified_badge=show_verified
     )
     
     st.divider()
@@ -1625,6 +1784,9 @@ with st.sidebar:
 
     if selected_template != "Select a template..." and st.button("🎨 Apply Template", use_container_width=True):
         template = template_options[selected_template]
+        # Preserve current brand handle when applying template
+        current_handle = getattr(st.session_state.theme, 'brand_handle', 'elite.systemsai')
+        current_verified = getattr(st.session_state.theme, 'show_verified_badge', True)
         st.session_state.theme = BrandTheme(
             name=selected_template,
             primary_color=template["primary"],
@@ -1632,7 +1794,9 @@ with st.sidebar:
             accent_color=template["accent"],
             background_color=template["bg"],
             text_color=template["text"],
-            font_family="Arial"
+            font_family="Arial",
+            brand_handle=current_handle,
+            show_verified_badge=current_verified
         )
         st.success(f"✅ Applied '{selected_template}' template!")
         st.rerun()
